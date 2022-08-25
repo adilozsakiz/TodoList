@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @EqualsAndHashCode
 public class TodoResponse {
 
+    private Long id;
     private String description;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate date;
