@@ -23,4 +23,10 @@ public class TodoList {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate date;
     private boolean complete;
+
+    public TodoList(String description, LocalDate date, boolean complete) {
+        this.description = description;
+        this.date = date;
+        this.complete = complete;
+    }
 }
