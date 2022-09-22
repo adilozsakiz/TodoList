@@ -15,7 +15,7 @@ function App() {
   const [filter, setFilter] = useState("");
 
   async function getAllData(e) {
-    await axios.get(e !== undefined && e.length !== 0 ? `/api/todolist/getAll?description=${e}` : `/api/todolist/getAll`).then((resp) => {
+    await axios.get(e !== undefined && e.length !== 0 ? `/api/todolist/getTodosByDesc?description=${e}` : `/api/todolist/getAllTodos`).then((resp) => {
       const trueArr = []
       let dataHolder = []
       for(const singleData of resp.data) {

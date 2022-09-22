@@ -1,9 +1,11 @@
 package com.example.todolist.controller;
 
+import com.example.todolist.dto.response.GenericResponse;
 import com.example.todolist.dto.request.TodoRequest;
 import com.example.todolist.dto.response.TodoResponse;
 import com.example.todolist.service.TodoListService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,31 +14,49 @@ import java.util.List;
 @RequestMapping("/api/todolist")
 public class TodoListController {
 
-    @Autowired
-    private TodoListService todoListService;
+    private final TodoListService todoListService;
+
+    public TodoListController(TodoListService todoListService) {
+        this.todoListService = todoListService;
+    }
 
     @PostMapping
-    public TodoResponse createTodo(@RequestBody TodoRequest request) {
-        return todoListService.createTodo(request);
+    public ResponseEntity<?> createTodo(@RequestBody TodoRequest request) {
+        if(request.getDescription() == null || request.getDescription().isEmpty()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("description cannot be null");
+        }
+        if(request.getDate()==null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("date cannot be null");
+        }
+        todoListService.createTodo(request);
+        return ResponseEntity.ok(new GenericResponse("data successfully created."));
     }
 
     @DeleteMapping("/{id}")
-    public TodoResponse deleteTodo(@PathVariable(value = "id") Long id) {
-        return todoListService.deleteTodoById(id);
+    public ResponseEntity<?> deleteTodo(@PathVariable(value = "id") Long id) {
+        todoListService.deleteTodoById(id);
+        return ResponseEntity.ok(new GenericResponse("data with given id has been deleted."));
     }
 
-    @GetMapping(value = "/getById/{id}")
-    public TodoResponse getById(@PathVariable(value = "id") Long id) {
-        return todoListService.getById(id);
+    @GetMapping(value = "/getAllTodos")
+    public List<TodoResponse> getAllTodos() {
+        return todoListService.getAllTodos();
     }
 
-    @GetMapping(value = "/getAll")
-    public List<TodoResponse> getAll(@RequestParam(required = false) String description) {
-        return todoListService.getAll(description);
+    @GetMapping(value = "/getTodosByDesc")
+    public List<TodoResponse> getTodosByDesc(@RequestParam(value = "description", required = false  ) String description) {
+        return todoListService.getTodosByDesc(description);
     }
 
     @PutMapping("/{id}")
-    public TodoResponse updateTodo(@PathVariable(value = "id") Long id, @RequestBody TodoRequest request) {
-        return todoListService.updateTodo(id, request);
+    public ResponseEntity<?> updateTodo(@PathVariable(value = "id") Long id, @RequestBody TodoRequest request) {
+        if(request.getDescription() == null || request.getDescription().isEmpty()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("description cannot be null.");
+        }
+        if(request.getDate()==null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("date cannot be null.");
+        }
+        todoListService.updateTodo(id, request);
+        return ResponseEntity.ok(new GenericResponse("data with given id successfully updated."));
     }
 }
