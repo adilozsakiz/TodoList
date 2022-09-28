@@ -2,6 +2,7 @@ package com.example.todolist.controller;
 
 import com.example.todolist.dto.request.TodoRequest;
 import com.example.todolist.dto.response.TodoResponse;
+import com.example.todolist.exception.TodoNotFoundException;
 import com.example.todolist.service.TodoListService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,5 +55,10 @@ public class TodoListController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("date cannot be null.");
         }
         return new ResponseEntity<>(todoListService.updateTodo(id, request),HttpStatus.OK);
+    }
+
+    @ExceptionHandler(TodoNotFoundException.class)
+    public ResponseEntity<String> handleTodoNotFoundException(TodoNotFoundException ex){
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND);
     }
 }
