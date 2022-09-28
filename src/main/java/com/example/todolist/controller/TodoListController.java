@@ -2,7 +2,6 @@ package com.example.todolist.controller;
 
 import com.example.todolist.dto.request.TodoRequest;
 import com.example.todolist.dto.response.TodoResponse;
-import com.example.todolist.exception.TodoNotFoundException;
 import com.example.todolist.service.TodoListService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,12 +21,6 @@ public class TodoListController {
 
     @PostMapping
     public ResponseEntity<?> createTodo(@RequestBody TodoRequest request) {
-        if(request.getDescription() == null || request.getDescription().isEmpty()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("description cannot be null");
-        }
-        if(request.getDate()==null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("date cannot be null");
-        }
         return new ResponseEntity<>(todoListService.createTodo(request),HttpStatus.CREATED);
     }
 
@@ -48,17 +41,6 @@ public class TodoListController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateTodo(@PathVariable Long id, @RequestBody TodoRequest request) {
-        if(request.getDescription() == null || request.getDescription().isEmpty()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("description cannot be null.");
-        }
-        if(request.getDate()==null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("date cannot be null.");
-        }
         return new ResponseEntity<>(todoListService.updateTodo(id, request),HttpStatus.OK);
-    }
-
-    @ExceptionHandler(TodoNotFoundException.class)
-    public ResponseEntity<String> handleTodoNotFoundException(TodoNotFoundException ex){
-        return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND);
     }
 }
