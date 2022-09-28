@@ -1,6 +1,6 @@
 package com.example.todolist.service;
 
-import com.example.todolist.exception.NotFoundException;
+import com.example.todolist.exception.TodoNotFoundException;
 import com.example.todolist.dto.request.TodoRequest;
 import com.example.todolist.dto.response.TodoResponse;
 import com.example.todolist.entity.TodoList;
@@ -28,26 +28,26 @@ public class TodoListService {
     }
 
     @Transactional
-    public void createTodo(TodoRequest request) {
+    public TodoResponse createTodo(TodoRequest request) {
         var todo = modelMapper.map(request, TodoList.class);
         log.warn("New data added: {}", request);
-        modelMapper.map(todoListRepository.save(todo), TodoResponse.class);
+        return modelMapper.map(todoListRepository.save(todo), TodoResponse.class);
     }
 
     @Transactional
-    public void deleteTodoById(Long id) {
-        var todo = todoListRepository.findById(id).orElseThrow(() -> new NotFoundException());
+    public TodoResponse deleteTodoById(Long id) {
+        var todo = todoListRepository.findById(id).orElseThrow(() -> new TodoNotFoundException("Todo not found with id:"+id));
         todoListRepository.deleteById(id);
         log.warn("Data is deleted: {}", todo);
-        modelMapper.map(todo, TodoResponse.class);
+        return modelMapper.map(todo, TodoResponse.class);
     }
 
     @Transactional
-    public void updateTodo(Long id, TodoRequest request) {
-        var todo = todoListRepository.findById(id).orElseThrow(() -> new NotFoundException());
+    public TodoResponse updateTodo(Long id, TodoRequest request) {
+        var todo = todoListRepository.findById(id).orElseThrow(() -> new TodoNotFoundException("Todo not found with id:"+id));
         log.warn("Data is updated: {} => {}", todo, request);
         modelMapper.map(request, todo);
-        modelMapper.map(todoListRepository.save(todo), TodoResponse.class);
+        return modelMapper.map(todoListRepository.save(todo), TodoResponse.class);
     }
 
     public List<TodoResponse> getAllTodos() {

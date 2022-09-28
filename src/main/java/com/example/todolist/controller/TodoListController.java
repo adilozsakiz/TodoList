@@ -1,6 +1,5 @@
 package com.example.todolist.controller;
 
-import com.example.todolist.dto.response.GenericResponse;
 import com.example.todolist.dto.request.TodoRequest;
 import com.example.todolist.dto.response.TodoResponse;
 import com.example.todolist.service.TodoListService;
@@ -28,35 +27,32 @@ public class TodoListController {
         if(request.getDate()==null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("date cannot be null");
         }
-        todoListService.createTodo(request);
-        return ResponseEntity.ok(new GenericResponse("data successfully created."));
+        return new ResponseEntity<>(todoListService.createTodo(request),HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteTodo(@PathVariable(value = "id") Long id) {
-        todoListService.deleteTodoById(id);
-        return ResponseEntity.ok(new GenericResponse("data with given id has been deleted."));
+    public ResponseEntity<TodoResponse> deleteTodo(@PathVariable Long id) {
+        return new ResponseEntity<>(todoListService.deleteTodoById(id),HttpStatus.OK);
     }
 
     @GetMapping(value = "/getAllTodos")
-    public List<TodoResponse> getAllTodos() {
-        return todoListService.getAllTodos();
+    public ResponseEntity<List<TodoResponse>> getAllTodos() {
+        return new ResponseEntity<>(todoListService.getAllTodos(),HttpStatus.OK);
     }
 
     @GetMapping(value = "/getTodosByDesc")
-    public List<TodoResponse> getTodosByDesc(@RequestParam(value = "description", required = false  ) String description) {
-        return todoListService.getTodosByDesc(description);
+    public ResponseEntity<List<TodoResponse>> getTodosByDesc(@RequestParam(value = "description", required = false  ) String description) {
+        return new ResponseEntity<>(todoListService.getTodosByDesc(description),HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateTodo(@PathVariable(value = "id") Long id, @RequestBody TodoRequest request) {
+    public ResponseEntity<?> updateTodo(@PathVariable Long id, @RequestBody TodoRequest request) {
         if(request.getDescription() == null || request.getDescription().isEmpty()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("description cannot be null.");
         }
         if(request.getDate()==null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("date cannot be null.");
         }
-        todoListService.updateTodo(id, request);
-        return ResponseEntity.ok(new GenericResponse("data with given id successfully updated."));
+        return new ResponseEntity<>(todoListService.updateTodo(id, request),HttpStatus.OK);
     }
 }
